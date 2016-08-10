@@ -1,0 +1,145 @@
+# Copyright 2016 Google Inc. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: jupyterhub-config
+    namespace: jupyterhub
+  data:
+    admin-users: '<ADMIN_USER>'
+    oauth-whitelist: '<ADMIN_USER>'
+---  
+  apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    name: jupyterhub
+    namespace: jupyterhub
+  spec:
+    replicas: 1
+    template:
+      metadata:
+        labels:
+          app: hub
+      spec:
+        containers:
+        - name: hub
+          image: <REPOSITORY_IMAGE_PATH>/jupyterhub:latest
+          livenessProbe:
+            exec:
+              command: ["bash", "-c", "bash -c 'timeout -s 9 -k 10s 5s sed -n \"1w /mnt/jupyterhub/podhealth\" <<< \"$(date +%F_%H:%M:%S)\" && echo ok'"]
+            initialDelaySeconds: 45
+            timeoutSeconds: 2
+            periodSeconds: 20
+          ports:
+          - containerPort: 8081
+          - containerPort: 8000
+          env:
+          - name: KSPAWN_HUB_IP
+            value: "jupyterhub-api.jupyterhub.svc.cluster.local:8081"
+          - name: JHUB_SPWN_DEBUG
+            value: "TRUE"
+          - name: JHUB_LOG_LEVEL
+            value: DEBUG
+          - name: KUBESPAWN_NFS_PATH
+            value: '<FILER_PATH>/notebooks/{username}'
+          - name: KUBESPAWN_NFS_SERVER
+            value: '<FILER_IP>'
+          - name: KUBESPAWN_IMAGE
+            value: '<REPOSITORY_IMAGE_PATH>/<SINGLE_USER_IMAGE>'
+          - name: KUBESPAWN_CPU_LIMIT
+            value: '3000m'
+          - name: KUBESPAWN_CPU_REQUEST
+            value: '200m'
+          - name: KUBESPAWN_MEM_LIMIT
+            value: '8Gi'
+          - name: KUBESPAWN_MEM_REQUEST
+            value: '256Mi'
+          - name: SHARED_PATH
+            value: '/mnt/jupyterhub'
+          - name: OAUTH_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: jupyterhub
+                key: oauth-client-id
+          - name: OAUTH_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: jupyterhub
+                key: oauth-client-secret
+          - name: OAUTH_CALLBACK_URL
+            valueFrom:
+              secretKeyRef:
+                name: jupyterhub
+                key: oauth-callback-url
+          - name: ADMIN_USERS
+            valueFrom:
+              configMapKeyRef:
+                name: jupyterhub-config
+                key: admin-users
+          - name: OAUTH_WHITELIST
+            valueFrom:
+              configMapKeyRef:
+                name: jupyterhub-config
+                key: oauth-whitelist
+          volumeMounts:
+          - mountPath: /mnt/jupyterhub
+            name: nfs
+          - mountPath: /mnt/configmap
+            name: manifests
+          resources:
+            limits:
+              cpu: 100m
+              memory: 1000Mi
+            requests:
+              cpu: 100m
+              memory: 1000Mi
+        volumes:
+        - name: nfs
+          nfs:
+            server: <FILER_IP>  
+            path: "<FILER_PATH>"
+        - name: manifests
+          configMap:
+            name: jhub-manifests
+---
+  kind: Service
+  apiVersion: v1
+  metadata:
+    name: jupyterhub-api
+    namespace: jupyterhub
+  spec:
+    selector:
+      app: hub
+    ports:
+      - protocol: TCP
+        port: 8081
+        targetPort: 8081
+        name: api
+---
+  kind: Service
+  apiVersion: v1
+  metadata:
+    name: jupyterhub-ui
+    namespace: jupyterhub
+  spec:
+    type: NodePort
+    selector:
+      app: hub
+    ports:
+      - protocol: TCP
+        port: 8000
+        targetPort: 8000
+        name: ui
+        nodePort: 30000

@@ -1,0 +1,83 @@
+# Copyright 2016 Google Inc. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+---
+  apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    name: nginx
+    namespace: jupyterhub
+  spec:
+    replicas: 1
+    template:
+      metadata:
+        labels:
+          app: proxy
+      spec:
+        containers:
+        - name: proxy
+          image: <REPOSITORY_IMAGE_PATH>/k8s-cmap-nginx:latest
+          ports:
+          - containerPort: 80
+          - containerPort: 443
+          env:
+          - name: NG_CONF_SSL_CER_FILE
+            value: "/mnt/secure/tls.crt"
+          - name: NG_CONF_SSL_KEY_FILE
+            value: "/mnt/secure/tls.key"
+          - name: NG_CONF_DHPARAM_FILE
+            value: "/mnt/secure/dhparam.pem"
+          - name: NG_CONF_OUTPUT
+            value: "/etc/nginx/nginx.custom.conf"
+          - name: NG_CONF_INPUT
+            value: "/mnt/config/nginx.conf"
+          volumeMounts:
+          - mountPath: /mnt/secure
+            name: certs
+            readOnly: true
+          - mountPath: /mnt/config
+            name: nginx-conf
+          resources:
+            limits:
+              cpu: 100m
+              memory: 1000Mi
+            requests:
+              cpu: 100m
+              memory: 1000Mi
+        volumes:  
+        - name: "certs"
+          secret: 
+            secretName: "jhub-tls"
+        - name: nginx-conf
+          configMap:
+            name: jhub-nginx-conf
+---
+  kind: Service
+  apiVersion: v1
+  metadata:
+    name: jupyterhub-proxy
+    namespace: jupyterhub
+  spec:
+    type: LoadBalancer
+    <STATIC_IP>
+    selector:
+      app: proxy
+    ports:
+      - protocol: TCP
+        port: 443
+        targetPort: 443
+        name: proxyssl
+      - protocol: TCP
+        port: 80
+        targetPort: 80
+        name: proxy
