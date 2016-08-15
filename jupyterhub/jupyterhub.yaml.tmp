@@ -63,7 +63,7 @@
           - name: KUBESPAWN_CPU_REQUEST
             value: '200m'
           - name: KUBESPAWN_MEM_LIMIT
-            value: '8Gi'
+            value: '2Gi'
           - name: KUBESPAWN_MEM_REQUEST
             value: '256Mi'
           - name: SHARED_PATH

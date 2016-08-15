@@ -13,7 +13,10 @@ Shell script for creating and managing the Container Engine Cluster and Cloud Pl
 - Teardown cluster resources quickly
 
 ## Requirements
-Launch with Google Cloud Shell in Cloud Platform project
+- Launch with Google Cloud Shell in Cloud Platform project.
+- Preconfigure a Compute Engine VM running as an NFS Server as outlined in the tutorial:
+ https://cloud.google.com/solutions/using-tensorflow-jupyterhub-classrooms
+
 
 ## Usage
 ./gke-jupyter-classroom.sh [ options ] < command> 
