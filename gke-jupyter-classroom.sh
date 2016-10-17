@@ -378,14 +378,14 @@ function build_deepdream() {
     logverbose "building ${IMAGE_PREFIX}/tf-deepdream-su"
     docker build -t ${IMAGE_PREFIX}/tf-deepdream-su ./jupyter/tf-deepdream/
     logverbose "tagging ${IMAGE_PREFIX}/tf-deepdream-su"
-    docker tag -f "${IMAGE_PREFIX}/tf-deepdream-su" "gcr.io/${REPOSITORY_PATH}/tf-deepdream-su"
+    docker tag "${IMAGE_PREFIX}/tf-deepdream-su" "gcr.io/${REPOSITORY_PATH}/tf-deepdream-su"
     push_image_to_repo "gcr.io/${REPOSITORY_PATH}/tf-deepdream-su"
 }
 
 #tools
 function build_gcptools() {
     docker build -t ${IMAGE_PREFIX}/tf-gcptools-su  ./jupyter/gcp-tools/
-    docker tag -f "${IMAGE_PREFIX}/tf-gcptools-su"  "gcr.io/${REPOSITORY_PATH}/tf-gcptools-su"
+    docker tag "${IMAGE_PREFIX}/tf-gcptools-su"  "gcr.io/${REPOSITORY_PATH}/tf-gcptools-su"
     push_image_to_repo "gcr.io/${REPOSITORY_PATH}/tf-gcptools-su" 
 }
 
@@ -393,7 +393,7 @@ function build_gcptools() {
 function build_jupyterhub() {
     logverbose "building ${IMAGE_PREFIX}/jupyterhub"
     docker build -t ${IMAGE_PREFIX}/jupyterhub ./jupyterhub/
-    docker tag -f "${IMAGE_PREFIX}/jupyterhub" "gcr.io/${REPOSITORY_PATH}/jupyterhub"
+    docker tag "${IMAGE_PREFIX}/jupyterhub" "gcr.io/${REPOSITORY_PATH}/jupyterhub"
     push_image_to_repo "gcr.io/${REPOSITORY_PATH}/jupyterhub"
 }
 
@@ -402,7 +402,7 @@ function build_nginx_proxy() {
     logverbose "Building ${IMAGE_PREFIX}/k8s-cmap-nginx"
     docker build -t ${IMAGE_PREFIX}/k8s-cmap-nginx ./proxy/
     logverbose "Tagging ${IMAGE_PREFIX}/k8s-cmap-nginx"
-    docker tag -f "${IMAGE_PREFIX}/k8s-cmap-nginx" "gcr.io/${REPOSITORY_PATH}/k8s-cmap-nginx"
+    docker tag "${IMAGE_PREFIX}/k8s-cmap-nginx" "gcr.io/${REPOSITORY_PATH}/k8s-cmap-nginx"
     push_image_to_repo "gcr.io/${REPOSITORY_PATH}/k8s-cmap-nginx"
 }
 
