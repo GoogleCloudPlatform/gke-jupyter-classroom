@@ -36,10 +36,9 @@ RUN apt-get -qq update && apt-get install --no-install-recommends -y unzip wget 
  && wget https://github.com/googledatalab/pydatalab/archive/master.zip \
  && unzip -q master.zip && ln -s /usr/bin/nodejs /usr/bin/node \
  && tsc --module amd --noImplicitAny --outdir pydatalab-master/datalab/notebook/static pydatalab-master/datalab/notebook/static/*.ts \
- && wget https://github.com/apache/incubator-beam/archive/python-sdk.zip \
- && unzip -q python-sdk.zip \
- && /opt/conda/envs/python2/bin/pip install pydatalab-master/. incubator-beam-python-sdk/sdks/python/. \
-   https://storage.googleapis.com/tensorflow/linux/cpu/debian/jessie/tensorflow-0.11.0rc0-cp27-none-linux_x86_64.whl \
+ && git clone https://github.com/apache/beam.git 
+RUN /opt/conda/envs/python2/bin/pip install pydatalab-master/. beam/sdks/python/. \
+   http://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-1.0.0-cp27-none-linux_x86_64.whl \
    https://storage.googleapis.com/cloud-ml/sdk/cloudml.latest.tar.gz \
    google-api-python-client psutil plotly \
  && /opt/conda/envs/python2/bin/jupyter nbextension install --py datalab.notebook --sys-prefix \
@@ -50,6 +49,4 @@ RUN apt-get -qq update && apt-get install --no-install-recommends -y unzip wget 
  COPY jupyter_notebook_config.py /root/.jupyter/
  COPY ipython_config.py /root/.ipython/profile_default/
  COPY docker-entrypoint.sh /docker-entrypoint.sh
- RUN chmod a+rx /docker-entrypoint.sh  
- ENTRYPOINT ["/docker-entrypoint.sh"]
- CMD [""]
+ RUN chmod a+rx /docker-entrypoint.sh
