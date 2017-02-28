@@ -150,8 +150,8 @@ options               list available options
 Examples:
   build and push all the containers to your repository with the my-images image prefix path
 
-  ./gke-jupyter-classroom.sh --push-image --image-prefix my-images build 
-  ./gke-jupyter-classroom.sh -pi my-images -b 
+  ./gke-jupyter-classroom.sh --push-image --image-prefix my-images build all
+  ./gke-jupyter-classroom.sh -pi my-images -b all
 
   create and deploy to a new cluster 
 
