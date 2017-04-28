@@ -32,7 +32,7 @@ Shell script for creating and managing the Container Engine Cluster and Cloud Pl
   - create and deploy to a new cluster 
 
   `./gke-jupyter-classroom.sh --cluster-name jupyterhub1 --autoscale-nodes 6 --nodes 1 \
-       --filer-path /jupyterhub --filer-ip 10.240.0.6 --image-prefix my-images \
+       --filer-path /data --filer-ip 10.240.0.6 --image-prefix my-images \
 	   --admin-user youremail@gmail.com deploy`
   
   - teardown the environment
@@ -80,8 +80,9 @@ Shell script for creating and managing the Container Engine Cluster and Cloud Pl
    	JupyterHub config files.  This can also be a domain name
 
    -F, --filer-path
-     Specify the file path on the NFS file server that will be mounted as the root JupyterHub
-     directory. default is /mnt/jupyterhub
+     ***NOTE that this field should not be changed. /data is the only value that works with the 
+        Launcher that creates the filer server Specify the file path on the NFS file server that 
+	will be mounted as the root JupyterHub directory. default is /data
   
    -i, --image-prefix
      Specify the prefix of the Docker image before you build it and push it to cloud repository
