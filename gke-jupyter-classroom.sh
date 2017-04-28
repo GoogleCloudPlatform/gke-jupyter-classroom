@@ -75,8 +75,10 @@ Flags:
     JupyterHub config files.  This can also be a domain name
 
   -F, --filer-path
+    *** Do not change this if you are using the Cloud Launcher shared file server, it will not
+    accept any other value for the Stroage name field other than data. ***
     Specify the file path on the NFS file server that will be mounted as the root JupyterHub
-    directory. default is /mnt/jupyterhub
+    directory. default is /data
 
   -i, --image-prefix
     Specify the prefix of the Docker image before you build it and push it to cloud repository
@@ -902,7 +904,7 @@ IMAGE_PREFIX=${IMAGE_PREFIX:-'cloud-solutions-images'} #used only for build acti
 
 ERROR_COUNT=0 #used in validation step will exit if > 0
 FILER_IP=${FILER_IP:-''} #NFS File Server internal IP address
-FILER_PATH=${FILER_PATH:-'/mnt/jupyterhub'}
+FILER_PATH=${FILER_PATH:-'/data'}
 GCP_PROJECT=""
 GCLOUD="$(which gcloud)"
 DOCKER="$(which docker)"
