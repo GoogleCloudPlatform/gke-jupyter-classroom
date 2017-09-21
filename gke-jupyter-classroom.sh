@@ -454,9 +454,9 @@ function teardown() {
         ${KUBECTL} delete configmaps --namespace jupyterhub jhub-manifests  
         ${KUBECTL} delete -f ./jupyterhub.yaml
         ${KUBECTL} delete -f ./sslproxy.yaml
-        ${GCLOUD} compute firewall-rules delete ${CLUSTER_NAME}-proxy-fw --quiet
+        #${GCLOUD} compute firewall-rules delete ${CLUSTER_NAME}-proxy-fw --quiet
         ${KUBECTL} delete configmaps --namespace jupyterhub jhub-nginx-conf
-        ${GCLOUD} compute http-health-checks delete ${PROXY_HEALTH} --quiet
+        #${GCLOUD} compute http-health-checks delete ${PROXY_HEALTH} --quiet
         ${KUBECTL} delete --all pods --namespace jupyterhub
         loginfo "please manually delete your static IP : ${GCLOUD} compute addresses delete ${CLUSTER_NAME}-static-ip --region ${REGION}"
         if ${GCLOUD} container clusters list 2> /dev/null | grep -q ${CLUSTER_NAME} ; then
@@ -536,11 +536,11 @@ function create_nginx_proxy() {
     else
         add_tag_to_gke_instances
         create_nginx_configmap
-        create_health_check_firewall_rule "tcp:443"
+        #create_health_check_firewall_rule "tcp:443"
         create_proxy_k8s_manifest
         apply_proxy_to_cluster
-        create_http_proxy_health_check
-        associate_health_check_with_target_pool
+        #create_http_proxy_health_check
+        #associate_health_check_with_target_pool
     fi
 
 }
@@ -678,7 +678,7 @@ function create_certificate_secret() {
         loginfo "Dry Run: Setting creating SSL certificates and k8's secret "
     else
         if ${SKIP_CERTS} ; then
-            loginfo "Skiping certificates, you should have certs already made /tmp/tls.crt /tmp/tls.key /tmp/dhparam.pem"
+            loginfo "Skipping certificates, you should have certs already made /tmp/tls.crt /tmp/tls.key /tmp/dhparam.pem"
         else
             openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
                 -keyout /tmp/tls.key -out /tmp/tls.crt -subj "/CN=${SUBDOMAIN}/O=${DOMAIN}"
