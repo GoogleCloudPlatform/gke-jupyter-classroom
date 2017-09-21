@@ -30,6 +30,14 @@
           ports:
           - containerPort: 80
           - containerPort: 443
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 80
+            periodSeconds: 1
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 10
           env:
           - name: NG_CONF_SSL_CER_FILE
             value: "/mnt/secure/tls.crt"
