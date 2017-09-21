@@ -659,10 +659,10 @@ function associate_health_check_with_target_pool() {
         sleep 5s
     done
     logverbose "detected forwarding rules from IP"
-    fwd_rule="$(${GCLOUD} compute forwarding-rules list --regions ${REGION} |  grep "${SERVICE_IP}" | awk '{print $1}')"
+    fwd_rule="$(${GCLOUD} compute forwarding-rules list --filter="region:(${REGION})" |  grep "${SERVICE_IP}" | awk '{print $1}')"
     while [ -z ${fwd_rule} ]; do
         loginfo "Detecting Forwarding Rule this may take several minutes"
-        fwd_rule="$(${GCLOUD} compute forwarding-rules list --regions ${REGION} |  grep "${SERVICE_IP}" | awk '{print $1}')"
+        fwd_rule="$(${GCLOUD} compute forwarding-rules list --filter="region:(${REGION})" |  grep "${SERVICE_IP}" | awk '{print $1}')"
         sleep 5s
     done
     logverbose "service_ip=${SERVICE_IP}  fwd_rule=${fwd_rule}"
