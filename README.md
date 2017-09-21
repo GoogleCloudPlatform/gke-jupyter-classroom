@@ -129,6 +129,14 @@ Shell script for creating and managing the Container Engine Cluster and Cloud Pl
  
 ### Notes
 
+IF the Filer VM is not mounting correctly in your pods, SSH into the Filer VM and run `sudo showmounts -e localhost` and verify that it says something like this:
+`Export list for localhost:
+/data 127.0.0.1,10.0.0.0/8`
+
+If the cluster is created with the default instance type and only 1 node, the default settings for memory and cpu requests will be too high to deploy a single Jupyter instance for a user. In the JupyterHub webform you can specify the following into the Environment Variables text area:
+`cpu_request=100m
+memory_request=100Mi`
+
 The script must be run with sufficient privileges from Google Cloud Shell, with the Compute Engine API and Container Engine API's enabled.
 
 The Google SSL Proxy network feature (currently in Beta) is available to use instead of the Nginx proxy.
